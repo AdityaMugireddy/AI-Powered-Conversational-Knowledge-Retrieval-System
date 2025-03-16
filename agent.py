@@ -8,13 +8,13 @@ from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_ollama import OllamaLLM
 
-# 🔹 Initialize Embedding Model
+#Initialize Embedding Model
 embedding_function = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
-# 🔹 Load the Vector Database (ChromaDB)
+# Load the Vector Database (ChromaDB)
 vector_db = Chroma(persist_directory="./db", embedding_function=embedding_function)
 
-# 🔹 Initialize Memory (for tracking previous questions)
+# Initialize Memory (for tracking previous questions)
 memory = ConversationSummaryBufferMemory(
     llm=OllamaLLM(model="deepseek-r1:7b"), 
     memory_key="chat_history", 
@@ -23,20 +23,20 @@ memory = ConversationSummaryBufferMemory(
     max_token_limit=2048  # Ensures enough context retention
 )
 
-# 🔹 Initialize Retriever
+# Initialize Retriever
 retriever = vector_db.as_retriever(search_kwargs={"k": 10})
 
-# 🔹 Load AI Model
+# Load AI Model
 llm = OllamaLLM(model="deepseek-r1:7b", streaming=True)
 
-# 🔹 Create Conversational Q&A Chain (Ensure memory is used)
+# Create Conversational Q&A Chain (Ensure memory is used)
 qa_chain = ConversationalRetrievalChain.from_llm(
     llm=llm, retriever=retriever, memory=memory, return_source_documents=True
     
 
 )
 
-# 🔹 Function to Ask Questions
+# Function to Ask Questions
 def ask_question(query):
     print("Query Running")
     retrieval_start = time.time()
